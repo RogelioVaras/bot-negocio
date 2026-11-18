@@ -1,0 +1,12 @@
+{
+  "name": "bot-negocio",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Bot de atención a clientes y publicaciones con aprobación previa",
+  "scripts": {
+    "pruebas": "node pruebas/probar.js",
+    "local": "node pruebas/servidor-local.js",
+    "desplegar": "npx wrangler deploy"
+  }
+}

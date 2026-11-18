@@ -1,0 +1,289 @@
+==========================================================================
+ BOT DE ATENCIÓN A CLIENTES Y PUBLICACIONES CON APROBACIÓN
+==========================================================================
+
+Qué hace este bot, en simple:
+
+  1. Le responde a los clientes que te escriben (web, Telegram, WhatsApp),
+     usando los datos y las respuestas que tú definas.
+  2. Cuando no sabe algo, o cuando el cliente está molesto o pide hablar
+     con una persona, NO improvisa: deja la conversación en tu bandeja
+     para que la respondas tú desde el panel.
+  3. Te escribe propuestas de publicidad para tus redes. Tú las lees,
+     las editas, las apruebas y recién ahí se publican. Nunca sale nada
+     sin tu visto bueno.
+  4. Cada 15 minutos te avisa por Telegram si quedó algún cliente
+     esperando respuesta.
+
+
+--------------------------------------------------------------------------
+ 1. VERLO FUNCIONANDO AHORA MISMO (2 minutos, sin instalar nada)
+--------------------------------------------------------------------------
+
+  Paso 1. Abre la carpeta bot-negocio (está en tu Escritorio).
+
+  Paso 2. Haz doble clic en el archivo  ABRIR-PANEL.bat
+
+  Paso 3. Se abre una ventana negra y, a los dos segundos, tu navegador
+          con el panel ya cargado. Viene con clientes y propuestas de
+          ejemplo para que veas cómo funciona.
+
+  Las tres pestañas del panel:
+
+     Conversaciones : clientes que necesitan que respondas tú.
+                      Escribes la respuesta y aprietas Enviar respuesta.
+     Publicaciones  : escribes una idea, aprietas Generar propuestas,
+                      el bot escribe 3 versiones, editas el texto que
+                      quieras, aprietas Aprobar y después Publicar ahora.
+     Probar         : le escribes al bot como si fueras un cliente, para
+                      ver qué contestaría antes de conectar nada.
+
+  Para apagarlo: cierra la ventana negra o aprieta Ctrl + C.
+  Los datos de ejemplo se borran al cerrar: es solo una demostración.
+
+
+--------------------------------------------------------------------------
+ 2. CAMBIAR EL BOT A LA REALIDAD DE TU NEGOCIO
+--------------------------------------------------------------------------
+
+  Todo lo que el bot dice sale de un solo archivo:  src/negocio.js
+
+  Ábrelo con el Bloc de notas (clic derecho, Abrir con, Bloc de notas).
+
+  Lo que hay que editar, bloque por bloque:
+
+    nombre            : el nombre de tu empresa, tal como quieres que
+                        aparezca en el chat y en las publicaciones.
+    descripcionCorta  : una línea con lo que haces.
+    horario           : tu horario real de atención.
+    tono              : cómo quieres que hable. Déjalo como está si te
+                        parece bien.
+    servicios         : tu lista de servicios. Cada uno con nombre y
+                        una frase de detalle.
+    preguntas         : AQUÍ ESTÁ LA MAGIA. Cada pregunta tiene:
+                          claves   = las palabras que escribe el cliente
+                                     (sin tildes, en minúscula)
+                          respuesta= lo que contesta el bot, palabra
+                                     por palabra
+                        Si el mensaje del cliente contiene alguna clave,
+                        el bot responde esa respuesta.
+    derivarSi         : frases que hacen que el bot se calle y te pase
+                        el cliente a ti. Ejemplo: "reclamo", "abogado".
+    respaldo          : lo que dice cuando no sabe qué responder.
+    hashtags          : los hashtags que agrega a las publicaciones.
+    ideasPublicacion  : ideas de ejemplo que aparecen como sugerencia.
+
+  Regla de oro: edita solo el texto que está entre comillas. No borres
+  las comas, ni las llaves, ni las comillas.
+
+  Después de guardar, cierra la ventana negra y vuelve a abrir
+  ABRIR-PANEL.bat para ver los cambios.
+
+
+--------------------------------------------------------------------------
+ 3. CONECTARLO A CLIENTES DE VERDAD
+--------------------------------------------------------------------------
+
+ El bot ya sabe responder. Lo que falta es el "cable" hasta donde te
+ escriben los clientes. Hay tres cables y se conectan en distinto orden
+ de dificultad.
+
+ --- 3.1 TELEGRAM (lo más rápido: 5 minutos, gratis, sin trámites) ---
+
+   Sirve para probar el bot con clientes reales hoy mismo, sin depender
+   de Meta ni de aprobaciones.
+
+   Paso 1. En Telegram busca  @BotFather  y ábrele conversación.
+   Paso 2. Escríbele:  /newbot
+   Paso 3. Te pide un nombre. Escribe, por ejemplo:  Bot Varas y Asociados
+   Paso 4. Te pide un usuario que termine en "bot". Escribe, por ejemplo:
+           varas_asociados_bot   (si está tomado, prueba otro)
+   Paso 5. BotFather te devuelve una línea con un token largo, del tipo
+           123456789:AAH...  Ese token es la llave del bot. No lo
+           compartas ni lo pegues en páginas web.
+   Paso 6. Ese token hay que guardarlo en la nube, no en el archivo.
+           (Ver el punto 5, "Ponerlo en la nube", primero.)
+
+ --- 3.2 WHATSAPP (el que usan casi todos tus clientes, pero es el más lento) ---
+
+   Requisitos reales, para que no pierdas tiempo:
+     - Una cuenta en Meta for Developers (gratis).
+     - Un número de teléfono que NO esté usando WhatsApp normal, o
+       migrar tu número a la API (Meta lo permite, pero da trámites).
+     - Verificación del negocio en Meta.
+     - Meta cobra por conversación. Hay un cupo gratis mensual pequeño.
+
+   Con eso, el bot queda recibiendo y respondiendo por WhatsApp con el
+   número de tu negocio. El código ya está listo (src/canales/whatsapp.js);
+   solo falta pegar el token y el id del número.
+
+   Si quieres, avanzamos esto juntos paso a paso: es la parte donde más
+   gente se traba, porque Meta pide documentos y revisa el negocio.
+
+ --- 3.3 CHAT EN TU PÁGINA WEB (gratis, sin trámites) ---
+
+   El bot ya trae un chat listo en la dirección  /chat
+   Cuando esté en la nube, es tan simple como poner un botón en tu sitio
+   que abra esa dirección. No requiere ninguna cuenta de Meta.
+
+
+--------------------------------------------------------------------------
+ 4. PUBLICAR EN FACEBOOK E INSTAGRAM
+--------------------------------------------------------------------------
+
+  El flujo es siempre el mismo:
+
+    1. Escribes la idea en la pestaña Publicaciones.
+    2. El bot escribe 3 versiones (directa, beneficio, pregunta).
+    3. Tú editas el texto que quieras y aprietas Aprobar.
+    4. Aprietas Publicar ahora. Solo ahí sale a la calle.
+
+  Para que el paso 4 funcione de verdad hacen falta cuatro datos de Meta:
+
+    META_TOKEN        : permiso de publicación de tu página.
+    FACEBOOK_PAGE_ID  : el número de tu página de Facebook.
+    INSTAGRAM_ID      : el número de tu cuenta de Instagram de empresa.
+    IMAGEN_URL        : un enlace público a la foto que quieres publicar
+                        (Instagram no acepta publicaciones sin imagen).
+
+  Mientras falten, el panel te avisa "falta conectar Facebook e Instagram"
+  y deja la publicación aprobada y guardada. No finge que publicó.
+
+  Instagram exige imagen porque su API no permite publicar solo texto.
+  Si quieres publicar sin foto, se puede usar Facebook y el estado de
+  WhatsApp, que sí aceptan solo texto.
+
+
+--------------------------------------------------------------------------
+ 5. PONERLO EN LA NUBE, PARA QUE FUNCIONE CON TU PC APAGADO
+--------------------------------------------------------------------------
+
+  Se usa Cloudflare, que tiene un plan gratis de sobra para esto
+  (100.000 visitas al día). Todo se hace en la ventana negra, escribiendo
+  los comandos uno por uno y apretando Enter después de cada uno.
+
+  Paso 1. Abre la carpeta bot-negocio, haz clic en la barra de dirección,
+          escribe  cmd  y aprieta Enter. Se abre la ventana negra ya
+          ubicada en la carpeta.
+
+  Paso 2. Escribe este comando y Enter:
+
+            npx wrangler login
+
+          Se abre el navegador pidiendo permiso. Aprieta Allow.
+
+  Paso 3. Escribe y Enter:
+
+            npx wrangler kv namespace create DATOS
+
+          Te devuelve una línea con  id = "algo_largo". Copia solo lo que
+          está entre las comillas.
+
+  Paso 4. Abre wrangler.toml con el Bloc de notas. Busca las tres líneas
+          que empiezan con "#" más abajo de "Almacenamiento". Sácales el
+          "#" del principio a estas tres líneas:
+
+            [[kv_namespaces]]
+            binding = "DATOS"
+            id = ""
+
+          Y pega dentro de las comillas el id del paso 3. Guarda.
+
+  Paso 5. Cambia la clave del panel. En el mismo wrangler.toml, arriba,
+          donde dice  CLAVE_PANEL = "cambiame"  , escribe una clave tuya,
+          por ejemplo  "rogelio-2026". Esa clave es la que te va a pedir
+          el panel para entrar.
+
+  Paso 6. Publica el bot escribiendo:
+
+            npx wrangler deploy
+
+          Al final te muestra una dirección del tipo
+          https://bot-negocio.tunombre.workers.dev
+
+  Paso 7. Abre en el navegador esa dirección y agrégale al final
+          /panel?clave=TU_CLAVE
+
+          Ejemplo: https://bot-negocio.tunombre.workers.dev/panel?clave=rogelio-2026
+
+  Paso 8 (solo si conectaste Telegram). Guarda el token de BotFather:
+
+            npx wrangler secret put TELEGRAM_TOKEN
+
+          Te pide pegar el valor. Pega el token y Enter. No queda escrito
+          en ningún archivo.
+
+  Paso 9 (solo si conectaste Telegram). Avisarle a Telegram dónde está
+          tu bot. Reemplaza TU_TOKEN y TU_DIRECCION por los tuyos:
+
+            curl "https://api.telegram.org/botTU_TOKEN/setWebhook?url=TU_DIRECCION/webhook/telegram"
+
+          Debe responder  "ok":true .
+
+  Paso 10 (opcional, recomendado). Para que el bot redacte respuestas
+          propias cuando no calza con tus preguntas frecuentes, guarda una
+          clave de IA:
+
+            npx wrangler secret put IA_CLAVE
+
+          Funciona con DeepSeek, OpenAI u otro servicio compatible.
+
+
+--------------------------------------------------------------------------
+ 6. CUÁNTO CUESTA
+--------------------------------------------------------------------------
+
+   Cloudflare Workers     gratis hasta 100.000 visitas al día.
+   Almacenamiento KV      gratis hasta 100.000 lecturas al día.
+   Telegram               gratis.
+   Chat en tu web         gratis.
+   WhatsApp Cloud API     Meta cobra por conversación iniciada. Hay un
+                          cupo mensual gratis, chico. Consultar antes.
+   IA (opcional)          centavos por consulta. Sin clave de IA el bot
+                          igual funciona: responde con tus preguntas
+                          frecuentes y deriva el resto a ti.
+
+
+--------------------------------------------------------------------------
+ 7. LO QUE EL BOT NO HACE (para que no te sorprenda)
+--------------------------------------------------------------------------
+
+   - No publica nada sin que lo apruebes. Es a propósito.
+   - No inventa precios: si se lo piden, pregunta datos del caso.
+   - Instagram no acepta publicaciones sin imagen.
+   - No manda correos ni agenda reuniones todavía.
+   - Si no conectas el almacenamiento KV, el bot responde igual pero
+     olvida las conversaciones al reiniciarse.
+   - No reemplaza a un contador: filtra, responde lo repetitivo y te
+     ordena lo que necesita tu criterio.
+
+
+--------------------------------------------------------------------------
+ 8. QUÉ PEDIRME DESPUÉS
+--------------------------------------------------------------------------
+
+   Cuando quieras, dime cuál de estas seguimos y lo hacemos:
+
+   - "Conecta el WhatsApp con mi número" (paso a paso con Meta).
+   - "Que el bot responda con mis documentos y precios reales".
+   - "Que además de publicar, programe las publicaciones por semana".
+   - "Que me mande un resumen diario de conversaciones a mi correo".
+   - "Que el bot agende horas y las deje en mi Google Calendar".
+   - "Que revise si un cliente está enojado y me avise al tiro".
+
+
+--------------------------------------------------------------------------
+ 9. SI ALGO FALLA
+--------------------------------------------------------------------------
+
+   Revisar que todo sigue funcionando:
+
+        node pruebas/probar.js
+
+   Debe terminar diciendo:  55 pruebas ok, 0 fallidas
+   Si dice que hay fallas, cópiame el mensaje y lo arreglo.
+
+   Para conectar tu celular y tu correo Outlook, sigue el archivo
+   CONECTAR-TELEGRAM.txt, que está en esta misma carpeta.
+
+==========================================================================

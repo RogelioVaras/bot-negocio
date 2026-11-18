@@ -1,0 +1,344 @@
+==========================================================================
+ CÓMO DEJAR EL BOT FUNCIONANDO EN TU CELULAR
+==========================================================================
+
+ Vas a terminar con esto:
+
+   - Un bot en Telegram que abres desde tu celular.
+   - Te avisa solo cuando llega un correo a tu Outlook.
+   - Le puedes pedir /correos, /ver 2, /redactar 2 y /enviar.
+   - Nadie más puede leer tu correo: el bot solo obedece a tu chat.
+
+ Se hace en tres partes. La parte 1 y 2 son 20 minutos y sin ayuda de nadie.
+ La parte 3 (Outlook) probablemente necesita a tu administrador de TI.
+
+ >>> ESTADO AL 17-11-2026: la parte 1 y la parte 2 YA ESTÁN HECHAS.
+     Bot: @Asistente_rogelio2_bot
+     Publicado en: https://bot-negocio.rogeliovaras.workers.dev
+     Panel: esa misma dirección + /panel?clave=rogelio-2026
+     Token guardado, webhook conectado y dueño configurado.
+     Falta solo la parte 3: conectar el correo Outlook.
+
+
+--------------------------------------------------------------------------
+ PARTE 1. CREAR EL BOT EN TELEGRAM (10 minutos, desde tu celular)
+--------------------------------------------------------------------------
+
+  Paso 1. Instala Telegram en tu celular desde Play Store o App Store.
+          Entra con tu número.
+
+  Paso 2. En la lupa de arriba, busca  BotFather
+          Es el oficial: tiene un ticket azul al lado del nombre.
+
+  Paso 3. Entra a la conversación y aprieta el botón Empezar.
+
+  Paso 4. Escribe este mensaje y envíalo tal cual:
+
+            /newbot
+
+  Paso 5. BotFather te pregunta el nombre visible. Escribe, por ejemplo:
+
+            Asistente Rogelio
+
+  Paso 6. Te pregunta el nombre de usuario. Tiene que terminar en la
+          palabra bot y no puede tener espacios. Por ejemplo:
+
+            asistente_rogelio_bot
+
+          Si te dice que ya está ocupado, prueba asistente_rogelio2_bot.
+
+  Paso 7. Te responde "Done!" y te entrega una línea con un código largo,
+          del tipo:
+
+            123456789:AAH-xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+          Eso es el token: es la llave del bot. Cópialo y guárdalo en un
+          lugar seguro. NO se lo mandes a nadie, NO lo pegues en chats ni
+          en páginas web.
+
+  Listo. Ya tienes el bot creado. Todavía no responde nada porque aún
+  no está encendido en internet (parte 2).
+
+
+--------------------------------------------------------------------------
+ PARTE 2. ENCENDERLO EN INTERNET (15 minutos, en tu PC)
+--------------------------------------------------------------------------
+
+  Paso 1. Crea una cuenta gratis en Cloudflare:
+          abre  dash.cloudflare.com  y regístrate con tu correo.
+
+  Paso 2. Abre la carpeta bot-negocio en tu Escritorio. Haz clic en la
+          barra de dirección de la ventana, escribe  cmd  y aprieta Enter.
+          Se abre la ventana negra.
+
+  Paso 3. Escribe este comando y Enter:
+
+            npx wrangler login
+
+          Se abre el navegador pidiendo permiso. Aprieta Allow.
+
+  Paso 4. Crea la memoria del bot. Escribe y Enter:
+
+            npx wrangler kv namespace create DATOS
+
+          Te devuelve algo parecido a:
+            id = "a1b2c3d4e5f6..."
+
+          Copia solo lo que está entre las comillas.
+
+  Paso 5. Abre el archivo wrangler.toml con el Bloc de notas. Busca el
+          bloque que empieza con  # [[kv_namespaces]]  y quítale el "#"
+          a estas tres líneas, para que queden así:
+
+            [[kv_namespaces]]
+            binding = "DATOS"
+            id = "PEGA_AQUI_EL_ID"
+
+          Reemplaza PEGA_AQUI_EL_ID por lo que copiaste, sin borrar las
+          comillas. Guarda y cierra.
+
+  Paso 6. En el mismo archivo, arriba, cambia la clave del panel:
+
+            CLAVE_PANEL = "cambiame"
+
+          Escribe tu propia clave, por ejemplo  CLAVE_PANEL = "rogelio-2026"
+          Guarda.
+
+  Paso 7. En la ventana negra, escribe y Enter:
+
+            npx wrangler deploy
+
+          Al final te muestra una dirección parecida a:
+            https://bot-negocio.rogelio.workers.dev
+
+          Esa es la dirección de tu bot. Anótala.
+
+  Paso 8. Guarda el token de Telegram dentro del bot:
+
+            npx wrangler secret put TELEGRAM_TOKEN
+
+          Te pide pegar el valor. Pega el token de la parte 1 y Enter.
+
+  Paso 9. Prueba que quedó encendido. Abre en el navegador:
+
+            TU_DIRECCION/salud
+
+          Donde TU_DIRECCION es la dirección del paso 7. Debe responder
+          algo con  "ok":true .
+
+  Paso 10. Conecta Telegram con tu bot. Abre en el navegador esta
+           dirección, reemplazando las dos partes:
+
+            https://api.telegram.org/botTU_TOKEN/setWebhook?url=TU_DIRECCION/webhook/telegram
+
+           TU_TOKEN     = el código de BotFather (sin la palabra bot)
+           TU_DIRECCION = la dirección del paso 7
+
+           Debe responder  "ok":true . Si dice "webhook is already set"
+           también está bien.
+
+  Paso 11. Abre Telegram en tu celular, entra a tu bot (búscalo por el
+           nombre de usuario que elegiste) y aprieta Empezar.
+
+           Te va a responder con una línea parecida a:
+
+             Tu identificación de chat es: 487123456
+
+           Ese número es tuyo. Es lo que impide que nadie más use el bot
+           para leer tu correo.
+
+  Paso 12. Guarda ese número en el bot:
+
+            npx wrangler secret put TELEGRAM_CHAT_ID
+
+           Pega el número y Enter.
+
+  Paso 13. Vuelve a Telegram y escribe:
+
+            /estado
+
+           Debe decir "Dueño reconocido: 487123456". Desde ese momento el
+           bot es tuyo y solo te obedece a ti.
+
+  Paso 14. Escribe  /ayuda  para ver todo lo que puedes pedirle.
+
+
+--------------------------------------------------------------------------
+ PARTE 3. CONECTAR TU OUTLOOK (esto es lo que necesita a TI)
+--------------------------------------------------------------------------
+
+ Aquí está el punto delicado: tu correo es de la empresa, y Microsoft no
+ deja que cualquiera lea un buzón corporativo. Hay que crear una
+ "aplicación" en Microsoft con permiso para leer y enviar correo. Es
+ gratis, pero:
+
+   - Si tú eres administrador de la cuenta de la empresa, lo haces solo.
+   - Si no lo eres, tienes que pedirle a tu administrador de TI que cree
+     la aplicación y te pase dos datos. Abajo está el texto exacto para
+     mandarle por correo.
+
+ Mientras esto no esté, el bot igual funciona: te responde, pero cuando
+ le pides correos te dice "todavía no conecto tu Outlook".
+
+ --- 3.1 LO QUE HACES TÚ (o tu administrador) EN EL PORTAL DE MICROSOFT ---
+
+  Paso 1. Entra a  portal.azure.com  con tu correo de la empresa.
+
+  Paso 2. Busca en la barra de arriba:  Microsoft Entra ID  y entra.
+
+  Paso 3. En el menú de la izquierda, aprieta  Registros de aplicaciones.
+
+  Paso 4. Arriba, aprieta  Nuevo registro.
+
+  Paso 5. En Nombre escribe:  Bot Asistente Correo
+          En "Tipos de cuenta compatibles" elige la primera opción:
+          "Solo las cuentas de este directorio organizativo".
+          Aprieta  Registrar.
+
+  Paso 6. En la pantalla que aparece, copia y guarda estos dos datos:
+            - Id. de aplicación (cliente)
+            - Id. de directorio (inquilino)
+
+  Paso 7. En el menú de la izquierda, aprieta  Certificados y secretos.
+          Aprieta  Nuevo secreto de cliente.
+          En Descripción escribe:  bot
+          En Expira elige  24 meses.
+          Aprieta  Agregar.
+          Copia de inmediato el valor que aparece en la columna Valor.
+          Ese valor no se vuelve a mostrar nunca. Si lo pierdes, hay que
+          crear otro.
+
+  Paso 8. En el menú de la izquierda, aprieta  Permisos de API.
+          Aprieta  Agregar un permiso.
+          Elige  Microsoft Graph.
+          Elige  Permisos de la aplicación  (no "delegados").
+          Busca  Mail.ReadWrite  y márcalo.
+          Busca  Mail.Send  y márcalo.
+          Aprieta  Agregar permisos.
+
+  Paso 9. En la misma pantalla, aprieta el botón
+            "Conceder consentimiento de administrador para (el nombre de tu empresa)"
+          Aprieta  Sí.
+          Sin este botón el bot no puede entrar al correo.
+
+  Con eso terminaste en Microsoft. Tienes tres datos:
+     - Id. de aplicación (cliente)
+     - Id. de directorio (inquilino)
+     - El valor del secreto
+
+ --- 3.2 LO QUE HACES TÚ EN LA VENTANA NEGRA (5 minutos) ---
+
+  Escribe uno por uno, apretando Enter después de cada uno. En cada uno
+  te pide pegar el valor:
+
+    npx wrangler secret put CORREO_USUARIO
+      pega tu correo completo de la empresa, por ejemplo
+      rogelio.varas@tuempresa.cl
+
+    npx wrangler secret put CORREO_CLIENT_ID
+      pega el Id. de aplicación (cliente)
+
+    npx wrangler secret put CORREO_TENANT
+      pega el Id. de directorio (inquilino)
+
+    npx wrangler secret put CORREO_CLIENT_SECRET
+      pega el valor del secreto
+
+  (Opcional, para que el bot te proponga los textos de respuesta:
+   necesita una clave de IA, por ejemplo de DeepSeek. Si la tienes:)
+
+    npx wrangler secret put IA_CLAVE
+
+ --- 3.3 COMPROBAR ---
+
+  En Telegram escribe:
+
+    /estado
+
+  Debe decir:  Correo Outlook: conectado a tu correo
+
+  Después escribe:
+
+    /correos
+
+  Si aparecen tus últimos correos, quedó funcionando.
+
+  Desde ese momento, cada 2 minutos el bot revisa tu bandeja y, si llegó
+  algo nuevo, te manda un mensaje con el remitente, el asunto y la hora.
+
+ --- 3.4 SI TU EMPRESA NO TE DEJA CREAR LA APLICACIÓN ---
+
+  Pasa seguido: muchas empresas tienen bloqueado que un usuario normal
+  registre aplicaciones. Si te sale un mensaje diciendo que no tienes
+  permiso, mándale esto a tu administrador de TI:
+
+  ----------------------------------------------------------------------
+  Hola, necesito para un asistente personal de correo una aplicación en
+  Microsoft Entra ID con estos datos:
+
+    - Registro de aplicación, tipo "solo cuentas de este directorio".
+    - Permisos de API de Microsoft Graph, tipo APLICACIÓN:
+        Mail.ReadWrite
+        Mail.Send
+    - Consentimiento de administrador concedido.
+    - Que me entreguen: Id. de aplicación (cliente), Id. de directorio
+      (inquilino) y el valor de un secreto de cliente.
+    - El acceso debe quedar limitado a mi buzón solamente.
+
+  Gracias.
+  ----------------------------------------------------------------------
+
+  Con esos tres datos haces el punto 3.2 y listo.
+
+
+--------------------------------------------------------------------------
+ LO QUE PUEDES HACER DESDE EL CELULAR
+--------------------------------------------------------------------------
+
+  /correos                     ver los últimos correos
+  /ver 2                       leer el correo número 2 completo
+  /redactar 2                  que te proponga una respuesta
+  /enviar                      enviar la respuesta que propuso
+  /descartar                   botar el borrador y no enviar nada
+  /responder 2 tu texto        responder tú, con tus palabras
+  /avisos off                  no molestar con avisos de correo
+  /avisos on                   volver a avisar
+  /estado                      ver qué está conectado
+  /ayuda                       este mismo resumen
+
+  Nada se envía sin que tú escribas /enviar o /responder. El bot nunca
+  contesta un correo por su cuenta.
+
+
+--------------------------------------------------------------------------
+ SI ALGO NO FUNCIONA
+--------------------------------------------------------------------------
+
+  El bot no contesta nada en Telegram
+    - Revisa que TU_DIRECCION/salud responda "ok":true.
+    - Vuelve a hacer el Paso 10 de la parte 2 (setWebhook).
+    - Revisa que el token esté guardado: npx wrangler secret list
+
+  Dice "Tuve un problema: Microsoft rechazó el acceso"
+    - El secreto venció o está mal pegado. Crea uno nuevo en Azure
+      (Paso 7 de 3.1) y vuelve a guardarlo con
+      npx wrangler secret put CORREO_CLIENT_SECRET
+
+  Dice que no tiene permiso para el buzón
+    - Falta el botón "Conceder consentimiento de administrador" (Paso 9).
+      Solo lo puede apretar un administrador.
+
+  No llegan los avisos de correo nuevo
+    - La primera revisión solo toma la posición: espera 2 minutos y
+      manda un correo de prueba a ti mismo.
+    - Revisa que los avisos estén encendidos: /avisos on
+    - El plan gratis de Cloudflare revisa cada 2 minutos; puede demorar
+      hasta 2 minutos en avisar.
+
+  Para revisar todo desde cero en tu PC:
+
+        node pruebas/probar.js
+
+  Debe terminar en:  55 pruebas ok, 0 fallidas
+
+==========================================================================

@@ -1,0 +1,8 @@
+# Dependencias y archivos que no van al repositorio
+node_modules/
+.wrangler/
+public/vista-previa-*.html
+*.log
+token.txt
+token-telegram.txt
+.env

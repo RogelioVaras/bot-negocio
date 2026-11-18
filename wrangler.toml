@@ -1,0 +1,17 @@
+name = "bot-negocio"
+main = "src/index.js"
+compatibility_date = "2024-11-01"
+
+# --- Almacenamiento de conversaciones, propuestas y posición de correos ---
+# Ya creado el 17-11-2026.
+[[kv_namespaces]]
+binding = "DATOS"
+id = "0962638907524f8cbc1a4fa885b04f32"
+
+[vars]
+CLAVE_PANEL = "rogelio-2026"
+NEGOCIO = "Varas y Asociados"
+
+# Revisar correo y clientes cada 2 minutos (Cloudflare admite desde 1 minuto)
+[triggers]
+crons = ["*/2 * * * *"]
