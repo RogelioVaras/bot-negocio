@@ -55,7 +55,7 @@ export async function marcadoEnviado(env, cuerpo) {
   await al.escribir('correo:pendientes', resto);
 
   const para = await dueno(env, al);
-  if (env.TELEGRAM_TOKEN && para) {
+  if (env.TELEGRAM_TOKEN && para && (await al.leer('avisos:todo', 'on')) !== 'off') {
     const texto = cuerpo.ok
       ? `Respondido a ${cuerpo.para || 'el cliente'}:\n\n${String(cuerpo.texto || '').slice(0, 300)}`
       : `No pude enviar la respuesta a ${cuerpo.para || 'el cliente'}: ${String(cuerpo.error || 'error desconocido').slice(0, 200)}`;
@@ -79,7 +79,12 @@ export async function anotarError(env, cuerpo) {
   const ultimo = await al.leer('correo:errorAvisado', null);
   const ahora = Date.now();
   // No molestar más de una vez cada 6 horas con el mismo problema.
-  if (env.TELEGRAM_TOKEN && para && (!ultimo || ahora - Number(ultimo) > 6 * 3600 * 1000)) {
+  if (
+    env.TELEGRAM_TOKEN &&
+    para &&
+    (await al.leer('avisos:todo', 'on')) !== 'off' &&
+    (!ultimo || ahora - Number(ultimo) > 6 * 3600 * 1000)
+  ) {
     await al.escribir('correo:errorAvisado', ahora);
     try {
       await enviarMensaje(

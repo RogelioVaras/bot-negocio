@@ -512,6 +512,11 @@ export default {
 
   // Tarea programada: cada 2 minutos. Avisa de correos nuevos y de clientes esperando.
   async scheduled(event, env, ctx) {
+    const alTarea = almacen(env);
+
+    // Interruptor general: /avisos off silencia todos los avisos al dueño.
+    if ((await alTarea.leer('avisos:todo', 'on')) === 'off') return;
+
     try {
       await avisarCorreoNuevo(env);
     } catch (e) {
@@ -519,12 +524,24 @@ export default {
     }
 
     if (!env.TELEGRAM_TOKEN) return;
-    const al = almacen(env);
+    const al = alTarea;
     const duenoAviso = await chatDueno(env, al);
     if (!duenoAviso) return;
     const todas = await al.leer('conversaciones', []);
     const pendientes = todas.filter((c) => c.necesitaHumano && !c.atendida);
     if (!pendientes.length) return;
+
+    // El mismo aviso no se repite cada 2 minutos: solo si cambió la lista de
+    // conversaciones pendientes o si pasaron 6 horas desde el último recordatorio.
+    const firma = pendientes
+      .map((c) => `${c.id}:${(c.mensajes || []).length}`)
+      .sort()
+      .join('|');
+    const previo = await al.leer('avisos:pendientes', null);
+    const ahora = Date.now();
+    if (previo && previo.firma === firma && ahora - Number(previo.cuando) < 6 * 3600 * 1000) return;
+    await al.escribir('avisos:pendientes', { firma, cuando: ahora });
+
     const lineas = pendientes
       .slice(0, 8)
       .map((c) => `• ${c.nombre} (${c.canal}): ${c.mensajes[c.mensajes.length - 2]?.texto?.slice(0, 90) || ''}`)

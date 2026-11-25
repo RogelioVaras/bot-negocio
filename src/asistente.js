@@ -15,8 +15,8 @@ const AYUDA = `Soy tu asistente. Puedes escribirme:
 /redactar 2       que te proponga una respuesta al correo 2
 /enviar           enviar la respuesta propuesta
 /responder 2 tu texto    responder al correo 2 con tu texto
-/avisos off       dejar de avisarme de correos nuevos
-/avisos on        volver a avisarme
+/avisos off       no mandarme ningún aviso automático
+/avisos on        volver a mandarme avisos
 /estado           ver cómo está todo conectado
 /id               ver mi identificación de chat
 
@@ -76,7 +76,7 @@ export async function atenderAsistente(env, { texto, chatId }) {
     const lineas = [
       lineaCorreo,
       `IA para redactar: ${iaDisponible(env) ? 'activa' : 'no configurada (uso mis propias palabras)'}`,
-      `Avisos de correo nuevo: ${(await al.leer('correo:avisos', 'on')) === 'off' ? 'apagados' : 'encendidos'}`,
+      `Avisos al dueño: ${(await al.leer('avisos:todo', 'on')) === 'off' ? 'apagados (no te mando nada)' : 'encendidos'}`,
       `Dueño reconocido: ${duenoGuardado || 'todavía no configurado'}${String(duenoGuardado) === String(chatId) ? ' (ese eres tú)' : ''}`
     ];
     return lineas.join('\n');
@@ -86,7 +86,10 @@ export async function atenderAsistente(env, { texto, chatId }) {
     const valor = (resto || '').toLowerCase();
     if (valor !== 'on' && valor !== 'off') return 'Escribe /avisos on o /avisos off';
     await al.escribir('correo:avisos', valor);
-    return valor === 'on' ? 'Listo, te aviso cuando llegue correo nuevo.' : 'Listo, no te aviso más de correos nuevos.';
+    await al.escribir('avisos:todo', valor);
+    return valor === 'on'
+      ? 'Listo, vuelvo a avisarte de correos nuevos y de clientes esperando.'
+      : 'Listo, no te mando más avisos. Si me escribes, te sigo respondiendo.';
   }
 
   if (comando === 'ayuda' || comando === 'start' || comando === 'help') {
